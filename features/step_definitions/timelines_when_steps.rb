@@ -117,58 +117,19 @@ When(/^I set the sortation of the first level grouping criteria to explicit orde
   page.execute_script("jQuery('#timeline_options_grouping_one_sort').val('1')")
   page.execute_script("jQuery('#content form').submit()")
 end
-When (/^I trash the planning element with name "([^"]*?)"$/) do |planning_element_subject|
-  steps %Q{
-    When I click on the Planning Element with name "#{planning_element_subject}"
-      And I wait for the modal to show
-      And I click on the Trash Link
-      And I wait for the modal to close
-  }
-end
-When(/^I restore the planning element with name "(.*?)" of project "(.*?)"$/) do |planning_element_subject, project|
-  steps %Q{
-    When I open a modal for planning element "#{planning_element_subject}" of project "#{project}"
-      And I wait for the modal to show
-      And I click on the Restore Link
-      And I wait for the modal to close
-  }
-end
-When (/^I trash the planning element with name "([^"]*?)" of project "([^"]*?)"$/) do |planning_element_subject, project|
-  steps %Q{
-    When I open a modal for planning element "#{planning_element_subject}" of project "#{project}"
-      And I wait for the modal to show
-      And I click on the Trash Link
-      And I wait for the modal to close
-  }
-end
+
 When /^I click on the Restore Link$/ do
   page.execute_script("jQuery('.input-as-link').click()")
 end
 When /^I wait (\d+) seconds?$/ do |seconds|
   sleep seconds.to_i
 end
-When /^I wait for the modal to show$/ do
-  page.should have_selector('#modalDiv', visible: true)
-end
-When /^I wait for the modal to close$/ do
-  page.should have_no_selector('#modalDiv', visible: true)
-end
+
 When (/^I set duedate to "([^"]*)"$/) do |value|
   fill_in 'planning_element_due_date', :with => value
 end
 When /^I wait for timeline to load table$/ do
   page.should have_selector('.tl-left-main')
-end
-When (/^I open a modal for planning element "([^"]*)" of project "([^"]*)"$/) do |planning_element_subject, project_name|
-  planning_element = PlanningElement.find_by_subject(planning_element_subject)
-  project = Project.find_by_name(project_name)
-  page.execute_script <<-JS
-    Timeline.get().modalHelper.createPlanningModal(
-      'show',
-      #{project.id},
-      #{planning_element.id}
-    );
-  JS
 end
 
 When (/^I move "([^"]*)" to the top$/) do |name|
