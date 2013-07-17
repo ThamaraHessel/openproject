@@ -77,7 +77,7 @@ class PlanningElementsController < ApplicationController
           redirect_to project_planning_element_path(@project, @planning_element)
         else
           flash.now[:error] = l('timelines.planning_element_could_not_be_saved')
-          render :action => "new", :layout => layout_parameter_given?
+          render :action => "new"
         end
       end
     end
@@ -87,7 +87,7 @@ class PlanningElementsController < ApplicationController
     @planning_element = @project.planning_elements.find(params[:id])
 
     respond_to do |format|
-      format.html { render :layout => layout_parameter_given? }
+      format.html
       format.js { render :partial => 'show'}
     end
   end
@@ -96,7 +96,7 @@ class PlanningElementsController < ApplicationController
     @planning_element = @planning_elements.find(params[:id])
 
     respond_to do |format|
-      format.html { render :layout => layout_parameter_given? }
+      format.html
       format.js   { render :partial => 'edit' }
     end
   end
@@ -144,7 +144,7 @@ class PlanningElementsController < ApplicationController
     @planning_element = @planning_elements.find(params[:id])
 
     respond_to do |format|
-      format.html { render :layout => layout_parameter_given? }
+      format.html
     end
   end
 
@@ -152,7 +152,7 @@ class PlanningElementsController < ApplicationController
     @planning_element = @project.planning_elements.find(params[:id])
 
     respond_to do |format|
-      format.html { render :layout => layout_parameter_given? }
+      format.html
     end
   end
 
@@ -172,7 +172,7 @@ class PlanningElementsController < ApplicationController
     @planning_elements = @project.planning_elements.deleted
 
     respond_to do |format|
-      format.html { render :layout => layout_parameter_given? }
+      format.html
     end
   end
 
