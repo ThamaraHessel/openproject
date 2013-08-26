@@ -94,19 +94,19 @@ group :openid do
 end
 
 group :development do
-  gem 'rails-footnotes', '>= 3.7.5.rc4'
-  gem 'bullet'
   gem 'letter_opener', '~> 1.0.0'
   gem 'pry-rails'
   gem 'pry-stack_explorer'
   gem 'pry-rescue'
-  gem 'pry-debugger'
+  gem 'pry-byebug', :platforms => :mri_20
+  gem 'pry-debugger', :platforms => :mri_19
   gem 'pry-doc'
   gem 'rails-dev-tweaks', '~> 0.6.1'
   gem 'guard-rspec'
   gem 'guard-cucumber'
   gem 'rb-fsevent', :group => :test
   gem 'thin'
+  gem 'faker'
 end
 
 group :tools do
