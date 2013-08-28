@@ -1,5 +1,7 @@
 # Changelog
 
+* `#1767` Fixed bug: Viewing changesets results in "page not found"
+
 ## 3.0.0pre13
 
 * `#1606` Update journal fixtures
