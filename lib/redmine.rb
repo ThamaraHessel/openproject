@@ -55,7 +55,6 @@ Redmine::AccessControl.map do |map|
                  {
                    :types => [:index, :show],
                    :projects => [:show],
-                   :scenarios => [:index, :show],
                    :projects => [:show],
                    :activities => [:index]
                  },
@@ -64,8 +63,7 @@ Redmine::AccessControl.map do |map|
   map.permission :add_project, {:projects => [:new, :create]}, :require => :loggedin
   map.permission :edit_project,
                  {
-                   :projects => [:settings, :edit, :update],
-                   :scenarios => [:new, :create, :edit, :update, :confirm_destroy, :destroy]
+                   :projects => [:settings, :edit, :update]
                  },
                  :require => :member
   map.permission :select_project_modules, {:projects => :modules}, :require => :member
@@ -248,7 +246,7 @@ Redmine::MenuManager.map :admin_menu do |menu|
   menu.push :groups, {:controller => '/groups'}, :caption => :label_group_plural
   menu.push :roles, {:controller => '/roles'}, :caption => :label_role_and_permissions
   menu.push :types, {:controller => '/types'}, :caption => :label_type_plural
-  menu.push :issue_statuses, {:controller => '/issue_statuses'}, :caption => :label_issue_status_plural,
+  menu.push :issue_statuses, {:controller => '/issue_statuses'}, :caption => :label_work_package_status_plural,
             :html => {:class => 'issue_statuses'}
   menu.push :workflows, {:controller => '/workflows', :action => 'edit'}, :caption => Proc.new { Workflow.model_name.human }
   menu.push :custom_fields, {:controller => '/custom_fields'},  :caption => :label_custom_field_plural,
@@ -274,10 +272,10 @@ Redmine::MenuManager.map :project_menu do |menu|
   menu.push :roadmap, { :controller => '/versions', :action => 'index' }, :param => :project_id,
               :if => Proc.new { |p| p.shared_versions.any? }
 
-  menu.push :issues, { :controller => '/issues', :action => 'index' }, :param => :project_id, :caption => :label_issue_plural
-  menu.push :new_issue, { :controller => '/work_packages', :action => 'new', :sti_type => 'Issue' }, :param => :project_id, :caption => :label_issue_new, :parent => :issues,
+  menu.push :issues, { :controller => '/issues', :action => 'index' }, :param => :project_id, :caption => :label_work_package_plural
+  menu.push :new_issue, { :controller => '/work_packages', :action => 'new', :sti_type => 'Issue' }, :param => :project_id, :caption => :label_work_package_new, :parent => :issues,
               :html => { :accesskey => Redmine::AccessKeys.key_for(:new_issue) }
-  menu.push :view_all_issues, { :controller => '/issues', :action => 'all' }, :param => :project_id, :caption => :label_issue_view_all, :parent => :issues
+  menu.push :view_all_issues, { :controller => '/issues', :action => 'all' }, :param => :project_id, :caption => :label_work_package_view_all, :parent => :issues
   menu.push :summary_field, {:controller => '/issues/reports', :action => 'report'}, :param => :project_id, :caption => :label_workflow_summary, :parent => :issues
   menu.push :calendar, { :controller => '/issues/calendars', :action => 'index' }, :param => :project_id, :caption => :label_calendar
   menu.push :news, { :controller => '/news', :action => 'index' }, :param => :project_id, :caption => :label_news_plural

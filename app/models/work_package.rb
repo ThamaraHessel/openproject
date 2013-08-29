@@ -56,8 +56,7 @@ class WorkPackage < ActiveRecord::Base
   before_save :store_former_parent_id
   include OpenProject::NestedSet::WithRootIdScope
   after_save :reschedule_following_issues,
-             :update_parent_attributes,
-             :create_alternate_date
+             :update_parent_attributes
 
   after_move :remove_invalid_relations,
              :recalculate_attributes_for_former_parent
@@ -142,7 +141,6 @@ class WorkPackage < ActiveRecord::Base
   register_on_journal_formatter :plaintext,         :subject,
                                                     :planning_element_status_comment,
                                                     :responsible_id
-  register_on_journal_formatter :scenario_date,     /^scenario_(\d+)_(start|due)_date$/
 
   # acts_as_journalized will create an initial journal on wp creation
   # and touch the journaled object:
@@ -393,9 +391,40 @@ class WorkPackage < ActiveRecord::Base
   # Moves/copies an work_package to a new project and type
   # Returns the moved/copied work_package on success, false on failure
   def move_to_project(*args)
-    ret = WorkPackage.transaction do
+    WorkPackage.transaction do
       move_to_project_without_transaction(*args) || raise(ActiveRecord::Rollback)
     end || false
+  end
+
+  def reschedule_after(date)
+    return if date.nil?
+    if leaf?
+      if start_date.nil? || start_date < date
+        self.start_date, self.due_date = date, date + duration - 1
+        save
+      end
+    else
+      leaves.each do |leaf|
+        # this depends on the "update_parent_attributes" after save hook
+        # updating the start/end date of each work package between leaf and self
+        leaf.reschedule_after(date)
+      end
+    end
+  end
+
+  # Returns the time scheduled for this work package.
+  #
+  # Example:
+  #   Start Date: 2/26/09, Due Date: 3/04/09,  duration => 7
+  #   Start Date: 2/26/09, Due Date: 2/26/09,  duration => 1
+  #   Start Date: 2/26/09, Due Date: -      ,  duration => 1
+  #   Start Date: -      , Due Date: 2/26/09,  duration => 1
+  def duration
+    if (start_date && due_date)
+      due_date - start_date + 1
+    else
+      1
+    end
   end
 
   protected
@@ -581,17 +610,5 @@ class WorkPackage < ActiveRecord::Base
                                 :spent_on => Date.today })
 
     time_entries.build(attributes)
-  end
-
-  def create_alternate_date
-    # This is a hack.
-    # It is required as long as alternate dates exist/are not moved up to work_packages.
-    # Its purpose is to allow for setting the after_save filter in the correct order
-    # before acts as journalized and the cleanup method reload_lock_and_timestamps.
-    return true unless respond_to?(:alternate_dates)
-
-    if start_date_changed? or due_date_changed?
-      alternate_dates.create(:start_date => start_date, :due_date => due_date)
-    end
   end
 end

@@ -1,3 +1,5 @@
+#encoding: utf-8
+
 #-- copyright
 # OpenProject is a project management system.
 #
@@ -9,11 +11,10 @@
 # See doc/COPYRIGHT.rdoc for more details.
 #++
 
-FactoryGirl.define do
-  factory(:scenario, :class => Scenario) do
-    sequence(:name) { |n| "Scenario No. #{n}" }
-    sequence(:description) { |n| "Scenario No. #{n} would allow us to launch last week." }
+When(/^I activate activity filter "(.*?)"/) do |activity_type|
+  id = "show_#{activity_type.parameterize.underscore.pluralize.to_sym}"
 
-    association :project
+  all(:xpath, "//input[@id='#{id}']").each do |checkbox|
+    checkbox.set(true)
   end
 end
